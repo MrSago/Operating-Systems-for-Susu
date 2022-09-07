@@ -1,0 +1,13 @@
+
+* text=auto
+
+# GitHub
+.gitattributes  text
+.gitignore      text
+README.md       text
+
+# Source files
+*.c             text
+
+# Test files
+*.in            text
