@@ -22,7 +22,7 @@ void InputDataInHeap(HeapMap* hm) {
         printf("Name: ");
         fgets(data.name, 255, stdin);
         data.name[strlen(data.name) - 1] = '\0';
-        
+
         printf("Age: ");
         data.age = read_digit();
         putchar('\n');
@@ -39,7 +39,7 @@ void PrintDataFromHeap(HeapMap* hm) {
     }
 
     printf("\nData from heap:\n");
-    void** pointers = GetDataPointers(hm);    
+    void** pointers = GetDataPointers(hm);
     for (size_t i = 0; i < count; ++i) {
         Data* data = (Data*)(pointers[i]);
         printf("# %llu\n", i + 1);
@@ -66,39 +66,39 @@ int main() {
         switch (read_digit()) {
             case 1:
                 InputDataInHeap(default_heap);
-            break;
-            
+                break;
+
             case 2:
                 PrintDataFromHeap(default_heap);
-            break;
+                break;
 
             case 3:
                 ClearHeapMap(default_heap);
                 printf("\nHeap is cleared!\n");
-            break;
+                break;
 
             case 4:
                 InputDataInHeap(new_heap);
-            break;
-        
+                break;
+
             case 5:
                 PrintDataFromHeap(new_heap);
-            break;
+                break;
 
             case 6:
                 ClearHeapMap(new_heap);
                 printf("\nHeap is cleared!\n");
-            break;
+                break;
 
             case 0:
                 FreeHeapMap(&new_heap);
                 FreeHeapMap(&default_heap);
                 printf("\nSuccess exited!\n");
-            return 0;
+                return 0;
 
             default:
                 printf("\nUnknown option!\n");
-            break;
+                break;
         }
     }
 

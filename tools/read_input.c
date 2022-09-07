@@ -1,7 +1,6 @@
 
 #include "read_input.h"
 
-
 char* readline() {
 	size_t alloc_length = 1024;
 	size_t data_length = 0;
