@@ -1,13 +1,11 @@
 
+#include "main.h"
+
 #include <stdio.h>
 
 #include "heap_map.h"
 #include "tools/read_input.h"
-
-typedef struct {
-    char name[255];
-    int age;
-} Data;
+#include "unit_test.h"
 
 void InputDataInHeap(HeapMap* hm) {
     printf("\nEnter data count: ");
@@ -60,7 +58,8 @@ int main() {
             "3. Clear default heap\n"
             "4. Insert data in new heap\n"
             "5. Print data from new heap\n"
-            "6. Clear new heap\n");
+            "6. Clear new heap\n"
+            "7. Start unit tests\n");
 
         fflush(stdin);
         switch (read_digit()) {
@@ -95,6 +94,10 @@ int main() {
                 FreeHeapMap(&default_heap);
                 printf("\nSuccess exited!\n");
                 return 0;
+
+            case 7:
+                StartUnitTests();
+                break;
 
             default:
                 printf("\nUnknown option!\n");

@@ -29,6 +29,7 @@ int main() {
         printf("Can't run new process! Error code: %lu\n", GetLastError());
         return 0;
     }
+
     printf(
         "Child process created!\n"
         "Handle: %llu | PID: %lu\n\n",
