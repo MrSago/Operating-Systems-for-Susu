@@ -1,9 +1,8 @@
 
-#include <mem.h>
+#include <malloc.h>
 #include <pthread.h>
 #include <stdbool.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <time.h>
 
 #define BUF_SIZE (10)
@@ -20,8 +19,7 @@ void shared_state_init(shared_state_t* shared_state) {
     pthread_mutex_init(&shared_state->mtx, NULL);
     pthread_cond_init(&shared_state->cv, NULL);
     shared_state->done = false;
-    shared_state->buf = (char*)malloc(BUF_SIZE);
-    memset(shared_state->buf, '\0', BUF_SIZE);
+    shared_state->buf = (char*)calloc(BUF_SIZE, sizeof(char));
     shared_state->count = 0;
 }
 
