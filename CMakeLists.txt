@@ -30,4 +30,5 @@ function(setup_lab2)
 endfunction(setup_lab2)
 
 setup_lab2()
+setup_target(lab4)
 setup_target(lab5)
