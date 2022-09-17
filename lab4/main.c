@@ -1,3 +1,4 @@
+
 #include <mem.h>
 #include <pthread.h>
 #include <stdbool.h>
@@ -33,7 +34,7 @@ void shared_state_destroy(shared_state_t* shared_state) {
 void* generate_string(void* arg) {
     shared_state_t* ss = (shared_state_t*)arg;
     srand(time(NULL));
-    while (1) {
+    for (;;) {
         pthread_mutex_lock(&ss->mtx);
         while (ss->done) {
             pthread_cond_wait(&ss->cv, &ss->mtx);
@@ -51,7 +52,7 @@ void* generate_string(void* arg) {
 
 void* print_string(void* arg) {
     shared_state_t* ss = (shared_state_t*)arg;
-    while (1) {
+    for (;;) {
         pthread_mutex_lock(&ss->mtx);
         while (!ss->done) {
             pthread_cond_wait(&ss->cv, &ss->mtx);
