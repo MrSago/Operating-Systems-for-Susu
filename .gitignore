@@ -6,3 +6,5 @@
 build
 lab*/lab*
 *.in
+*CMakeLists.txt.user
+lab4/build*
