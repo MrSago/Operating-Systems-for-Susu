@@ -8,6 +8,7 @@ README.md       text
 
 # Source files
 *.c             text
+*.cpp           text
 
 # Test files
 *.in            text

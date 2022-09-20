@@ -16,4 +16,4 @@ void FreeHeapMap(HeapMap** hm_ptr);
 void** GetDataPointers(HeapMap* hm);
 size_t GetCountPointers(HeapMap* hm);
 
-#endif //_HEAP_MAP_H
+#endif  //_HEAP_MAP_H

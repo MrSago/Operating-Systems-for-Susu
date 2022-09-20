@@ -4,5 +4,4 @@
 
 void StartUnitTests();
 
-
-#endif //_UNIT_TEST_H
+#endif  //_UNIT_TEST_H

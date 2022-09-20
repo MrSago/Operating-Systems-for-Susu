@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 int main() {
-    Sleep(5000);
-    printf("Hello!\n");
-    return 0;
+  Sleep(5000);
+  printf("Hello!\n");
+  return 0;
 }

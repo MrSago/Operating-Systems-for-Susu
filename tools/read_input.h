@@ -3,8 +3,8 @@
 #define _READ_INPUT_H
 
 #ifdef _MSC_VER
-	#define _CRT_SECURE_NO_WARNINGS
-#endif //_MSC_VER
+#define _CRT_SECURE_NO_WARNINGS
+#endif  //_MSC_VER
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,4 +16,4 @@ int read_digit();
 unsigned long long read_digit_ull();
 int count_split(char* str, int count);
 
-#endif //_READ_INPUT_H
+#endif  //_READ_INPUT_H

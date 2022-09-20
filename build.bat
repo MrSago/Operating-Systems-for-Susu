@@ -2,8 +2,8 @@
 @echo off
 
 if ["%~1"] == [""] (
-    echo "Syntax: .\build.bat [target]"
-    exit
+  echo "Syntax: .\build.bat [target]"
+  exit
 )
 
 mkdir build 2>nul
