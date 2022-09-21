@@ -4,21 +4,22 @@
 #include <QMutex>
 #include <QWaitCondition>
 
-#define STR_SIZE (10)
+#define BUF_SIZE (11)
 #define DELAY (300)
 
 struct SharedState {
   QMutex* mtx;
   QWaitCondition* cv;
   bool done;
-  QString buf;
+  QChar buf[BUF_SIZE];
 
   SharedState() {
     mtx = new QMutex;
     cv = new QWaitCondition;
     done = false;
-    buf = "";
+    std::fill(buf, buf + BUF_SIZE, '\0');
   }
+
   ~SharedState() {
     delete mtx;
     delete cv;

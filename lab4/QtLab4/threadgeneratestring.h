@@ -17,8 +17,6 @@ class ThreadGenerateString : public QThread {
   void updateBufferTextEdit(const QString&);
   void updateGenerateTextEdit(const QString&);
 
- public slots:
-
  private:
   SharedState* ss;
 };

@@ -24,8 +24,14 @@ MainWindow::MainWindow(QWidget* parent)
 }
 
 MainWindow::~MainWindow() {
+  thread_generate->terminate();
+  thread_generate->wait();
   delete thread_generate;
+
+  thread_reader->terminate();
+  thread_reader->wait();
   delete thread_reader;
+
   delete shared_state;
   delete ui;
 }

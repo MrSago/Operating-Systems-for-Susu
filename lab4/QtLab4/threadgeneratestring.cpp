@@ -13,15 +13,15 @@ void ThreadGenerateString::run() {
       ss->cv->wait(ss->mtx);
     }
 
-    QString gen = "";
-    for (int i = 0; i < STR_SIZE; ++i) {
-      emit updateGenerateTextEdit(gen);
-      gen.push_back(
-          QChar('A' + QRandomGenerator::global()->generate() % ('Z' - 'A')));
+    QChar gen[BUF_SIZE] = {QChar('\0')};
+    for (int i = 0; i < BUF_SIZE; ++i) {
+      emit updateGenerateTextEdit(QString(gen));
+      gen[i] =
+          QChar('A' + QRandomGenerator::global()->generate() % ('Z' - 'A'));
       QThread::msleep(DELAY);
     }
-    ss->buf = qMove(gen);
-    emit updateBufferTextEdit(ss->buf);
+    std::copy(gen, gen + BUF_SIZE, ss->buf);
+    emit updateBufferTextEdit(QString(ss->buf));
 
     ss->done = true;
     ss->cv->wakeAll();

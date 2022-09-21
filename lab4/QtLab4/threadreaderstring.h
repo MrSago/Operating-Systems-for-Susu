@@ -17,8 +17,6 @@ class ThreadReaderString : public QThread {
   void updateBufferTextEdit(const QString&);
   void updateReaderTextEdit(const QString&);
 
- public slots:
-
  private:
   SharedState* ss;
 };
