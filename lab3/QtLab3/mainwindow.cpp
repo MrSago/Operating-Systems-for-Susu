@@ -1,6 +1,7 @@
 
 #include "mainwindow.h"
 
+#include <QMessageBox>
 #include <QStandardItemModel>
 
 #include "./ui_mainwindow.h"
@@ -8,55 +9,42 @@
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent),
       ui(new Ui::MainWindow),
-      model(new QStandardItemModel(0, 4)),
+      tick_timer(new QTimer(this)),
       sys_timer(new QTimer(this)),
-      fcfs(new FCFS(this)) {
+      model(new QStandardItemModel(0, 4)),
+      scheduler(new FCFS(this)) {
   ui->setupUi(this);
-  initTable();
   connectSlots();
+  connectScheduler();
+  initTable();
   sys_timer->start(1);
 }
 
 MainWindow::~MainWindow() {
-  delete fcfs;
+  delete tick_timer;
   delete sys_timer;
+  delete scheduler;
   delete model;
   delete ui;
 }
 
-void MainWindow::updateSystemTime() {
-  QTime time = QTime::currentTime();
-  ui->labelViewTime->setText(QString("%1.%2").arg(
-      time.toString(), QString::number(time.msec()).rightJustified(3, '0')));
+void MainWindow::connectScheduler() {
+  connect(tick_timer, &QTimer::timeout, scheduler, &ProcessScheduler::tick);
+  connect(scheduler, &ProcessScheduler::updateTable, this,
+          &MainWindow::onUpdateTable);
 }
 
-void MainWindow::onButtonAddProcessReleased() {
-  QString plan = ui->lineProcessPlan->text();
-  ProcessStates states(plan.length());
-  foreach (QChar state, plan) {
-    switch (state.unicode()) {
-      case 'R':
-        states.append(State::Ready);
-        break;
-      case 'W':
-        states.append(State::Waiting);
-        break;
-      case 'E':
-        states.append(State::Executing);
-        break;
-      case 'O':
-        states.append(State::Over);
-        break;
-      default:
-        qDebug("gg wp\n");
-        break;
-    }
-  }
-
-  fcfs->addProcess(states);
+void MainWindow::connectSlots() {
+  connect(sys_timer, &QTimer::timeout, this, &MainWindow::onUpdateSystemTime);
+  connect(ui->buttonAddProcess, &QPushButton::clicked, this,
+          &MainWindow::onButtonAddProcessClicked);
+  connect(ui->buttonStart, &QPushButton::clicked, this,
+          &MainWindow::onButtonStart);
+  connect(ui->buttonStop, &QPushButton::clicked, this,
+          &MainWindow::onButtonStop);
+  connect(ui->cbChooseAlgo, &QComboBox::currentIndexChanged, this,
+          &MainWindow::onChooseAlgo);
 }
-
-void MainWindow::onUpdateTable(ProcessInfo& info) { qDebug("it's work!\n"); }
 
 void MainWindow::initTable() {
   model->setHeaderData(0, Qt::Horizontal, "PID");
@@ -69,9 +57,102 @@ void MainWindow::initTable() {
   ui->processTable->setModel(model);
 }
 
-void MainWindow::connectSlots() {
-  connect(sys_timer, &QTimer::timeout, this, &MainWindow::updateSystemTime);
-  connect(ui->buttonAddProcess, &QPushButton::released, this,
-          &MainWindow::onButtonAddProcessReleased);
-  connect(fcfs, &FCFS::updateTable, this, &MainWindow::onUpdateTable);
+void MainWindow::onTickProcess() {}
+
+void MainWindow::onUpdateSystemTime() {
+  QTime time = QTime::currentTime();
+  ui->labelViewTime->setText(QString("%1.%2").arg(
+      time.toString(), QString::number(time.msec()).rightJustified(3, '0')));
+}
+
+void MainWindow::onButtonAddProcessClicked() {
+  QString plan = ui->lineProcessPlan->text();
+  if (plan.length() == 0) {
+    return;
+  }
+
+  ProcessStates states;
+  foreach (QChar state, plan) {
+    switch (state.unicode()) {
+      case 'W':
+        states.push_back(State::Waiting);
+        break;
+      case 'E':
+        states.push_back(State::Executing);
+        break;
+      default:
+        QMessageBox msgBox(this);
+        msgBox.setText("Invalid process plan!");
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.exec();
+        return;
+    }
+  }
+
+  scheduler->addProcess(states);
+}
+
+void MainWindow::onButtonStart() {
+  tick_timer->start(ui->spinBoxMsQuant->text().toInt());
+  ui->lineProcessPlan->setEnabled(false);
+  ui->buttonAddProcess->setEnabled(false);
+  ui->buttonRandomProcess->setEnabled(false);
+  ui->cbChooseAlgo->setEnabled(false);
+  ui->spinBoxMsQuant->setEnabled(false);
+  ui->buttonStart->setEnabled(false);
+  ui->buttonStop->setEnabled(true);
+}
+
+void MainWindow::onButtonStop() {
+  tick_timer->stop();
+  ui->lineProcessPlan->setEnabled(true);
+  ui->buttonAddProcess->setEnabled(true);
+  ui->buttonRandomProcess->setEnabled(true);
+  ui->cbChooseAlgo->setEnabled(true);
+  ui->spinBoxMsQuant->setEnabled(true);
+  ui->buttonStart->setEnabled(true);
+  ui->buttonStop->setEnabled(false);
+}
+
+void MainWindow::onUpdateTable(ProcessInfo& info) {
+  int idx = info.pid;
+  model->insertRow(idx);
+
+  model->setData(model->index(idx, 0), QString::number(info.pid));
+
+  model->setData(
+      model->index(idx, 1),
+      QString("%1.%2").arg(
+          info.add_time.toString(),
+          QString::number(info.add_time.msec()).rightJustified(3, '0')));
+
+  QString states = "";
+  foreach (State s, info.states) {
+    states += static_cast<char>(s);
+  }
+  model->setData(model->index(idx, 2), states);
+
+  model->setData(model->index(idx, 3),
+                 QChar(static_cast<char>(info.current_state)));
+
+  if (info.current_state == State::Executing) {
+    ui->labelViewPID->setText(QString::number(info.pid));
+  }
+}
+
+void MainWindow::onChooseAlgo(int index) {
+  delete scheduler;
+  delete model;
+  model = new QStandardItemModel(0, 4);
+  initTable();
+  ui->processTable->setModel(model);
+  switch (index) {
+    case 0:
+    case 1:
+      scheduler = new FCFS(this);
+      break;
+    default:
+      return;
+  }
+  connectScheduler();
 }

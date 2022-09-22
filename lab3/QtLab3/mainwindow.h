@@ -24,20 +24,25 @@ class MainWindow : public QMainWindow {
   MainWindow(QWidget* parent = nullptr);
   ~MainWindow();
 
+ private:
+  void connectScheduler();
+  void connectSlots();
+  void initTable();
+
  private slots:
-  void updateSystemTime();
-  void onButtonAddProcessReleased();
+  void onTickProcess();
+  void onUpdateSystemTime();
+  void onButtonAddProcessClicked();
+  void onButtonStart();
+  void onButtonStop();
   void onUpdateTable(ProcessInfo& info);
+  void onChooseAlgo(int index);
 
  private:
   Ui::MainWindow* ui;
-  QAbstractItemModel* model;
+  QTimer* tick_timer;
   QTimer* sys_timer;
-  ProcessScheduler* fcfs;
-  // ProcessScheduler* rr;
-
- private:
-  void initTable();
-  void connectSlots();
+  QAbstractItemModel* model;
+  ProcessScheduler* scheduler;
 };
 #endif  // MAINWINDOW_H

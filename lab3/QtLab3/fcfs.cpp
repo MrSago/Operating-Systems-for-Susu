@@ -3,20 +3,23 @@
 
 #include <QTime>
 
-FCFS::FCFS(QObject* parent) : ProcessScheduler{parent} {}
+FCFS::FCFS(QObject* parent) : ProcessScheduler{parent}, count_ticks(0) {}
 
-void FCFS::tick() {}
+void FCFS::tick() { qDebug("tick #%d\n", ++count_ticks); }
 
 void FCFS::addProcess(ProcessStates& states) {
   processes.push_back(
       ProcessInfo(processes.size(), QTime::currentTime(), states,
-                  processes.size() > 0 ? states[0] : State::Executing));
-  emit updateTable(processes.last());
+                  states.first() == State::Executing
+                      ? execute_pid == -1 ? State::Executing : State::Ready
+                      : State::Waiting));
 
-  //  processes.push_back(states);
-  //  int id = model->rowCount();
-  //  model->insertRow(id);
-  //  model->setData(model->index(id, 0), QString::number(id + 1));
-  //  model->setData(model->index(id, 1), QTime::currentTime().toString());
-  //  modfl->setData(model->index(id, 2), )
+  ProcessInfo& added = processes.last();
+  if (added.states.first() == State::Executing && execute_pid == -1) {
+    execute_pid = added.pid;
+  }
+
+  emit updateTable(added);
 }
+
+int FCFS::currentProcessExecute() { return execute_pid; }
