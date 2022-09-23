@@ -36,9 +36,9 @@
     <property name="geometry">
      <rect>
       <x>40</x>
-      <y>160</y>
+      <y>170</y>
       <width>1201</width>
-      <height>461</height>
+      <height>521</height>
      </rect>
     </property>
     <property name="font">
@@ -60,7 +60,7 @@
     <property name="geometry">
      <rect>
       <x>40</x>
-      <y>20</y>
+      <y>30</y>
       <width>1201</width>
       <height>131</height>
      </rect>
@@ -74,9 +74,9 @@
     <widget class="QPushButton" name="buttonRandomProcess">
      <property name="geometry">
       <rect>
-       <x>940</x>
-       <y>10</y>
-       <width>241</width>
+       <x>210</x>
+       <y>50</y>
+       <width>431</width>
        <height>31</height>
       </rect>
      </property>
@@ -92,9 +92,9 @@
     <widget class="QLabel" name="labelMsQuant">
      <property name="geometry">
       <rect>
-       <x>390</x>
-       <y>50</y>
-       <width>101</width>
+       <x>10</x>
+       <y>90</y>
+       <width>81</width>
        <height>31</height>
       </rect>
      </property>
@@ -104,7 +104,7 @@
       </font>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Ms / Quant&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ms / Tick&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
     <widget class="QLineEdit" name="lineProcessPlan">
@@ -112,7 +112,7 @@
       <rect>
        <x>130</x>
        <y>10</y>
-       <width>681</width>
+       <width>901</width>
        <height>31</height>
       </rect>
      </property>
@@ -149,9 +149,9 @@
     <widget class="QPushButton" name="buttonAddProcess">
      <property name="geometry">
       <rect>
-       <x>830</x>
+       <x>1040</x>
        <y>10</y>
-       <width>91</width>
+       <width>151</width>
        <height>31</height>
       </rect>
      </property>
@@ -167,8 +167,8 @@
     <widget class="QSpinBox" name="spinBoxMsQuant">
      <property name="geometry">
       <rect>
-       <x>500</x>
-       <y>50</y>
+       <x>100</x>
+       <y>90</y>
        <width>101</width>
        <height>31</height>
       </rect>
@@ -193,7 +193,7 @@
       <rect>
        <x>130</x>
        <y>50</y>
-       <width>241</width>
+       <width>71</width>
        <height>31</height>
       </rect>
      </property>
@@ -234,7 +234,7 @@
     <widget class="QPushButton" name="buttonStart">
      <property name="geometry">
       <rect>
-       <x>10</x>
+       <x>210</x>
        <y>90</y>
        <width>101</width>
        <height>31</height>
@@ -255,7 +255,7 @@
      </property>
      <property name="geometry">
       <rect>
-       <x>130</x>
+       <x>320</x>
        <y>90</y>
        <width>101</width>
        <height>31</height>
@@ -270,28 +270,12 @@
       <string>Stop</string>
      </property>
     </widget>
-   </widget>
-   <widget class="QFrame" name="infoFrame">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>630</y>
-      <width>1201</width>
-      <height>81</height>
-     </rect>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::StyledPanel</enum>
-    </property>
-    <property name="frameShadow">
-     <enum>QFrame::Raised</enum>
-    </property>
-    <widget class="QLabel" name="labelSystemTime">
+    <widget class="QPushButton" name="buttonTick">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>50</y>
-       <width>111</width>
+       <x>430</x>
+       <y>90</y>
+       <width>101</width>
        <height>31</height>
       </rect>
      </property>
@@ -301,14 +285,32 @@
       </font>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;System Time: &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>Tick</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="buttonClear">
+     <property name="geometry">
+      <rect>
+       <x>540</x>
+       <y>90</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Clear</string>
      </property>
     </widget>
     <widget class="QLabel" name="labelViewTime">
      <property name="geometry">
       <rect>
-       <x>130</x>
-       <y>50</y>
+       <x>780</x>
+       <y>90</y>
        <width>111</width>
        <height>31</height>
       </rect>
@@ -322,29 +324,11 @@
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;00:00:00.000&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
-    <widget class="QLabel" name="labelCurrentExPID">
+    <widget class="QLabel" name="labelViewCountTicks">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>31</y>
-       <width>191</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>14</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Current executed PID:</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="labelViewPID">
-     <property name="geometry">
-      <rect>
-       <x>210</x>
-       <y>30</y>
+       <x>770</x>
+       <y>50</y>
        <width>71</width>
        <height>20</height>
       </rect>
@@ -355,14 +339,14 @@
       </font>
      </property>
      <property name="text">
-      <string>-1</string>
+      <string>0</string>
      </property>
     </widget>
     <widget class="QLabel" name="labelCountTIcks">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>10</y>
+       <x>660</x>
+       <y>50</y>
        <width>101</width>
        <height>20</height>
       </rect>
@@ -376,11 +360,11 @@
       <string>Count ticks: </string>
      </property>
     </widget>
-    <widget class="QLabel" name="labelViewCountTicks">
+    <widget class="QLabel" name="labelViewPID">
      <property name="geometry">
       <rect>
-       <x>120</x>
-       <y>10</y>
+       <x>860</x>
+       <y>70</y>
        <width>71</width>
        <height>20</height>
       </rect>
@@ -391,7 +375,43 @@
       </font>
      </property>
      <property name="text">
-      <string>0</string>
+      <string>-1</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelCurrentExPID">
+     <property name="geometry">
+      <rect>
+       <x>660</x>
+       <y>71</y>
+       <width>191</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Current executed PID:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelSystemTime">
+     <property name="geometry">
+      <rect>
+       <x>660</x>
+       <y>90</y>
+       <width>111</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;System Time: &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
    </widget>

@@ -34,18 +34,21 @@ class ProcessScheduler : public QObject {
 
  public:
   explicit ProcessScheduler(QObject* parent = nullptr)
-      : QObject{parent}, execute_pid(-1) {}
+      : QObject{parent}, next_pid(0), execute_pid(-1), count_ticks(0) {}
 
   virtual void tick() = 0;
   virtual void addProcess(ProcessStates& states) = 0;
   virtual int currentProcessExecute() = 0;
 
  signals:
-  void updateTable(ProcessInfo& info);
+  void updateProcess(ProcessInfo& info);
+  void updateTicks(int ticks);
 
  protected:
   QVector<ProcessInfo> processes;
+  int next_pid;
   int execute_pid;
+  int count_ticks;
 };
 
 #endif  // PROCESSSCHEDULER_H

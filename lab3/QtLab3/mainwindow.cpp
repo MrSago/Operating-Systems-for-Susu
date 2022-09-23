@@ -18,6 +18,13 @@ MainWindow::MainWindow(QWidget* parent)
   connectScheduler();
   initTable();
   sys_timer->start(1);
+
+  ui->lineProcessPlan->setText("EEEWWWEEEEE");
+  onButtonAddProcessClicked();
+  ui->lineProcessPlan->setText("EEEEEWWEE");
+  onButtonAddProcessClicked();
+  ui->lineProcessPlan->setText("EEWWWEE");
+  onButtonAddProcessClicked();
 }
 
 MainWindow::~MainWindow() {
@@ -30,8 +37,12 @@ MainWindow::~MainWindow() {
 
 void MainWindow::connectScheduler() {
   connect(tick_timer, &QTimer::timeout, scheduler, &ProcessScheduler::tick);
-  connect(scheduler, &ProcessScheduler::updateTable, this,
+  connect(scheduler, &ProcessScheduler::updateProcess, this,
           &MainWindow::onUpdateTable);
+  connect(scheduler, &ProcessScheduler::updateTicks, this,
+          &MainWindow::onUpdateTicks);
+  connect(ui->buttonTick, &QPushButton::clicked, scheduler,
+          &ProcessScheduler::tick);
 }
 
 void MainWindow::connectSlots() {
@@ -43,6 +54,8 @@ void MainWindow::connectSlots() {
   connect(ui->buttonStop, &QPushButton::clicked, this,
           &MainWindow::onButtonStop);
   connect(ui->cbChooseAlgo, &QComboBox::currentIndexChanged, this,
+          &MainWindow::onChooseAlgo);
+  connect(ui->buttonClear, &QPushButton::clicked, this,
           &MainWindow::onChooseAlgo);
 }
 
@@ -57,7 +70,9 @@ void MainWindow::initTable() {
   ui->processTable->setModel(model);
 }
 
-void MainWindow::onTickProcess() {}
+void MainWindow::onUpdateTicks(int ticks) {
+  ui->labelViewCountTicks->setText(QString::number(ticks));
+}
 
 void MainWindow::onUpdateSystemTime() {
   QTime time = QTime::currentTime();
@@ -70,7 +85,6 @@ void MainWindow::onButtonAddProcessClicked() {
   if (plan.length() == 0) {
     return;
   }
-
   ProcessStates states;
   foreach (QChar state, plan) {
     switch (state.unicode()) {
@@ -88,7 +102,6 @@ void MainWindow::onButtonAddProcessClicked() {
         return;
     }
   }
-
   scheduler->addProcess(states);
 }
 
@@ -101,6 +114,8 @@ void MainWindow::onButtonStart() {
   ui->spinBoxMsQuant->setEnabled(false);
   ui->buttonStart->setEnabled(false);
   ui->buttonStop->setEnabled(true);
+  ui->buttonTick->setEnabled(false);
+  ui->buttonClear->setEnabled(false);
 }
 
 void MainWindow::onButtonStop() {
@@ -112,29 +127,28 @@ void MainWindow::onButtonStop() {
   ui->spinBoxMsQuant->setEnabled(true);
   ui->buttonStart->setEnabled(true);
   ui->buttonStop->setEnabled(false);
+  ui->buttonTick->setEnabled(true);
+  ui->buttonClear->setEnabled(true);
 }
 
 void MainWindow::onUpdateTable(ProcessInfo& info) {
   int idx = info.pid;
-  model->insertRow(idx);
-
+  if (!findProcess(info.pid)) {
+    model->insertRow(idx);
+  }
   model->setData(model->index(idx, 0), QString::number(info.pid));
-
   model->setData(
       model->index(idx, 1),
       QString("%1.%2").arg(
           info.add_time.toString(),
           QString::number(info.add_time.msec()).rightJustified(3, '0')));
-
   QString states = "";
   foreach (State s, info.states) {
     states += static_cast<char>(s);
   }
   model->setData(model->index(idx, 2), states);
-
   model->setData(model->index(idx, 3),
                  QChar(static_cast<char>(info.current_state)));
-
   if (info.current_state == State::Executing) {
     ui->labelViewPID->setText(QString::number(info.pid));
   }
@@ -155,4 +169,13 @@ void MainWindow::onChooseAlgo(int index) {
       return;
   }
   connectScheduler();
+}
+
+bool MainWindow::findProcess(int pid) {
+  for (int i = 0; i < model->rowCount(); ++i) {
+    if (pid == model->data(model->index(i, 0)).toInt()) {
+      return true;
+    }
+  }
+  return false;
 }

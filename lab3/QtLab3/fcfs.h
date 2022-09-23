@@ -17,9 +17,6 @@ class FCFS : public ProcessScheduler {
   virtual void tick();
   virtual void addProcess(ProcessStates& states);
   virtual int currentProcessExecute();
-
- private:
-  int count_ticks;
 };
 
 #endif  // FCFS_H

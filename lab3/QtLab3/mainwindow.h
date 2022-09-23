@@ -30,7 +30,7 @@ class MainWindow : public QMainWindow {
   void initTable();
 
  private slots:
-  void onTickProcess();
+  void onUpdateTicks(int ticks);
   void onUpdateSystemTime();
   void onButtonAddProcessClicked();
   void onButtonStart();
@@ -44,5 +44,7 @@ class MainWindow : public QMainWindow {
   QTimer* sys_timer;
   QAbstractItemModel* model;
   ProcessScheduler* scheduler;
+
+  bool findProcess(int pid);
 };
 #endif  // MAINWINDOW_H
