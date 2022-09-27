@@ -15,19 +15,23 @@ void FCFS::tick() {
   bool next_process = false;
   bool back_process = false;
 
-  processes.first().idx_state += 1;
-  if (processes.first().idx_state == processes.first().states.size()) {
-    processes.first().current_state = State::Over;
-    emit updateProcess(processes.first());
+  ProcessInfo& first = processes.first();
+  first.idx_state += 1;
+  if (first.idx_state == first.states.size()) {
+    first.current_state = State::Over;
+    emit updateProcess(first);
     processes.removeFirst();
     next_process = true;
-  } else if (processes.first().states[processes.first().idx_state] ==
-             State::Waiting) {
-    processes.first().current_state = State::Waiting;
-    emit updateProcess(processes.first());
-    processes.push_back(processes.first());
+  } else if (first.states[first.idx_state] == State::Waiting) {
+    first.current_state = State::Waiting;
+    emit updateProcess(first);
+    processes.push_back(first);
     processes.removeFirst();
     back_process = true;
+  }
+
+  if (!next_process && !back_process) {
+    emit updateProcess(first);
   }
 
   int cnt = processes.size() - back_process;
@@ -36,21 +40,24 @@ void FCFS::tick() {
     switch (proc.current_state) {
       case State::Waiting:
         proc.idx_state += 1;
-        if (proc.states[proc.idx_state] == State::Executing) {
+        if (proc.idx_state == proc.states.size()) {
+          processes.remove(proc.idx_state - 1);
+        } else if (proc.states[proc.idx_state] == State::Executing) {
           proc.current_state = State::Ready;
         }
+        emit updateProcess(proc);
         break;
       case State::Ready:
       case State::Executing:
       case State::Over:
         break;
     }
-    emit updateProcess(proc);
   }
 
   if (processes.empty()) {
     execute_pid = -1;
-  } else if (!processes.empty() && (next_process || back_process)) {
+  } else if (!processes.empty() && (next_process || back_process) &&
+             processes.first().current_state != State::Waiting) {
     processes.first().current_state = State::Executing;
     execute_pid = processes.first().pid;
     emit updateProcess(processes.first());

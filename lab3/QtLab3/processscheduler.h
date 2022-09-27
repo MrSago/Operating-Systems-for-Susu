@@ -3,6 +3,7 @@
 #define PROCESSSCHEDULER_H
 
 #include <QObject>
+#include <QQueue>
 #include <QTime>
 #include <QVector>
 
@@ -21,7 +22,7 @@ struct ProcessInfo {
   ProcessStates states;
   State current_state;
   int idx_state;
-  ProcessInfo(int _pid, QTime _time, ProcessStates _states, State _current)
+  ProcessInfo(int _pid, QTime _time, ProcessStates& _states, State _current)
       : pid(_pid),
         add_time(_time),
         states(_states),

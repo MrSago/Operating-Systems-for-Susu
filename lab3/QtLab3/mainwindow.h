@@ -30,12 +30,12 @@ class MainWindow : public QMainWindow {
   void initTable();
 
  private slots:
+  void onUpdateTable(ProcessInfo& info);
   void onUpdateTicks(int ticks);
   void onUpdateSystemTime();
   void onButtonAddProcessClicked();
   void onButtonStart();
   void onButtonStop();
-  void onUpdateTable(ProcessInfo& info);
   void onChooseAlgo(int index);
 
  private:

@@ -1,4 +1,3 @@
-
 #include "mainwindow.h"
 
 #include <QMessageBox>
@@ -70,6 +69,55 @@ void MainWindow::initTable() {
   ui->processTable->setModel(model);
 }
 
+void MainWindow::onUpdateTable(ProcessInfo& info) {
+  int idx = info.pid;
+  if (!findProcess(idx)) {
+    model->insertRow(idx);
+  }
+
+  for (int i = 0; i < model->columnCount(); ++i) {
+    QColor color("white");
+    switch (info.current_state) {
+      case State::Executing:
+        color.setNamedColor("lightgreen");
+        break;
+      case State::Waiting:
+        color.setNamedColor("lightblue");
+        break;
+      case State::Ready:
+        color.setNamedColor("coral");
+        break;
+      case State::Over:
+        color.setNamedColor("lightgrey");
+        break;
+    }
+    model->setData(model->index(idx, i), color, Qt::BackgroundRole);
+  }
+
+  model->setData(model->index(idx, 0), QString::number(info.pid));
+  model->setData(
+      model->index(idx, 1),
+      QString("%1.%2").arg(
+          info.add_time.toString(),
+          QString::number(info.add_time.msec()).rightJustified(3, '0')));
+  QString states = "";
+  for (int i = 0; i < info.states.size(); ++i) {
+    if (i == info.idx_state) {
+      states += QString("[%1]").arg(static_cast<char>(info.states[i]));
+    } else {
+      states += static_cast<char>(info.states[i]);
+    }
+  }
+  model->setData(model->index(idx, 2), states);
+  model->setData(model->index(idx, 3),
+                 QChar(static_cast<char>(info.current_state)));
+  if (info.current_state == State::Executing) {
+    ui->labelViewPID->setText(QString::number(info.pid));
+  } else if (info.current_state == State::Over) {
+    ui->labelViewPID->setText("#");
+  }
+}
+
 void MainWindow::onUpdateTicks(int ticks) {
   ui->labelViewCountTicks->setText(QString::number(ticks));
 }
@@ -112,6 +160,7 @@ void MainWindow::onButtonStart() {
   ui->buttonRandomProcess->setEnabled(false);
   ui->cbChooseAlgo->setEnabled(false);
   ui->spinBoxMsQuant->setEnabled(false);
+  ui->spinBoxTicks->setEnabled(false);
   ui->buttonStart->setEnabled(false);
   ui->buttonStop->setEnabled(true);
   ui->buttonTick->setEnabled(false);
@@ -125,33 +174,11 @@ void MainWindow::onButtonStop() {
   ui->buttonRandomProcess->setEnabled(true);
   ui->cbChooseAlgo->setEnabled(true);
   ui->spinBoxMsQuant->setEnabled(true);
+  ui->spinBoxTicks->setEnabled(true);
   ui->buttonStart->setEnabled(true);
   ui->buttonStop->setEnabled(false);
   ui->buttonTick->setEnabled(true);
   ui->buttonClear->setEnabled(true);
-}
-
-void MainWindow::onUpdateTable(ProcessInfo& info) {
-  int idx = info.pid;
-  if (!findProcess(info.pid)) {
-    model->insertRow(idx);
-  }
-  model->setData(model->index(idx, 0), QString::number(info.pid));
-  model->setData(
-      model->index(idx, 1),
-      QString("%1.%2").arg(
-          info.add_time.toString(),
-          QString::number(info.add_time.msec()).rightJustified(3, '0')));
-  QString states = "";
-  foreach (State s, info.states) {
-    states += static_cast<char>(s);
-  }
-  model->setData(model->index(idx, 2), states);
-  model->setData(model->index(idx, 3),
-                 QChar(static_cast<char>(info.current_state)));
-  if (info.current_state == State::Executing) {
-    ui->labelViewPID->setText(QString::number(info.pid));
-  }
 }
 
 void MainWindow::onChooseAlgo(int index) {
