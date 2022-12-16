@@ -1,12 +1,12 @@
-
-#include "fcfs.h"
+#include "rr.h"
 
 #include <QThread>
 #include <QTime>
 
-FCFS::FCFS(QObject* parent) : ProcessScheduler{parent} {}
+RR::RR(int ticks_per_process, QObject* parent)
+    : ticks_process(ticks_per_process), ProcessScheduler{parent} {}
 
-void FCFS::addProcess(ProcessStates& states) {
+void RR::addProcess(ProcessStates& states) {
   if (!isPaused) {
     return;
   }
@@ -23,9 +23,9 @@ void FCFS::addProcess(ProcessStates& states) {
   emit addedProcess(added);
 }
 
-int FCFS::currentProcessExecute() { return execute_pid; }
+int RR::currentProcessExecute() { return execute_pid; }
 
-void FCFS::tick() {
+void RR::tick() {
   emit updateTicks(++count_ticks);
 
   if (processes.empty()) {
@@ -37,17 +37,25 @@ void FCFS::tick() {
 
   ProcessInfo& first = processes.first();
   first.idx_state += 1;
+  current_ticks += 1;
   if (first.idx_state == first.states.size()) {
     first.current_state = State::Over;
     emit updateProcess(first);
     processes.removeFirst();
     next_process = true;
-  } else if (first.states[first.idx_state] == State::Waiting) {
-    first.current_state = State::Waiting;
+  } else if (first.states[first.idx_state] == State::Waiting ||
+             current_ticks >= ticks_process) {
+    if (first.current_state == State::Executing &&
+        first.states[first.idx_state] != State::Waiting) {
+      first.current_state = State::Ready;
+    } else {
+      first.current_state = State::Waiting;
+    }
     emit updateProcess(first);
     processes.push_back(first);
     processes.removeFirst();
     back_process = true;
+    current_ticks = 0;
   }
 
   if (!next_process && !back_process) {
@@ -84,7 +92,7 @@ void FCFS::tick() {
   }
 }
 
-void FCFS::start() {
+void RR::start() {
   while (!isFinished) {
     while (isPaused) {
       if (isFinished) {

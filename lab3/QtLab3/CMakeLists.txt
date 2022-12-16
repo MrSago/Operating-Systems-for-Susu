@@ -19,9 +19,13 @@ set(PROJECT_SOURCES
         mainwindow.cpp
         mainwindow.h
         mainwindow.ui
+        systemclock.h
+        systemclock.cpp
         processscheduler.h
         fcfs.h
         fcfs.cpp
+        rr.h
+        rr.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

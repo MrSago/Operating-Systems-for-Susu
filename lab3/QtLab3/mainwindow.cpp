@@ -1,61 +1,93 @@
 #include "mainwindow.h"
 
 #include <QMessageBox>
+#include <QRandomGenerator64>
 #include <QStandardItemModel>
 
 #include "./ui_mainwindow.h"
+#include "fcfs.h"
+#include "rr.h"
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent),
       ui(new Ui::MainWindow),
-      tick_timer(new QTimer(this)),
-      sys_timer(new QTimer(this)),
       model(new QStandardItemModel(0, 4)),
-      scheduler(new FCFS(this)) {
+      scheduler(new FCFS()),
+      scheduler_thread(new QThread()),
+      sys_clock(new SystemClock()),
+      sys_clock_thread(new QThread()) {
   ui->setupUi(this);
+
   connectSlots();
   connectScheduler();
   initTable();
-  sys_timer->start(1);
 
-  ui->lineProcessPlan->setText("EEEWWWEEEEE");
-  onButtonAddProcessClicked();
-  ui->lineProcessPlan->setText("EEEEEWWEE");
-  onButtonAddProcessClicked();
-  ui->lineProcessPlan->setText("EEWWWEE");
-  onButtonAddProcessClicked();
+  scheduler->moveToThread(scheduler_thread);
+  sys_clock->moveToThread(sys_clock_thread);
+
+  scheduler_thread->start();
+  sys_clock_thread->start();
+
+  // TEST
+  ui->cbChooseAlgo->setCurrentIndex(1);
+  for (int i = 0; i < 50; ++i) {
+    ui->lineProcessPlan->setText("EEEWWWEEEEE");
+    onButtonAddProcess();
+    ui->lineProcessPlan->setText("EEEEEWWEE");
+    onButtonAddProcess();
+    ui->lineProcessPlan->setText("EEWWWEE");
+    onButtonAddProcess();
+  }
 }
 
 MainWindow::~MainWindow() {
-  delete tick_timer;
-  delete sys_timer;
-  delete scheduler;
+  scheduler->stop();
+  scheduler_thread->quit();
+  scheduler_thread->wait();
+
+  sys_clock->stop();
+  sys_clock_thread->quit();
+  sys_clock_thread->wait();
+
   delete model;
+  delete scheduler;
+  delete scheduler_thread;
+  delete sys_clock;
+  delete sys_clock_thread;
   delete ui;
 }
 
-void MainWindow::connectScheduler() {
-  connect(tick_timer, &QTimer::timeout, scheduler, &ProcessScheduler::tick);
-  connect(scheduler, &ProcessScheduler::updateProcess, this,
-          &MainWindow::onUpdateTable);
-  connect(scheduler, &ProcessScheduler::updateTicks, this,
-          &MainWindow::onUpdateTicks);
-  connect(ui->buttonTick, &QPushButton::clicked, scheduler,
-          &ProcessScheduler::tick);
-}
-
 void MainWindow::connectSlots() {
-  connect(sys_timer, &QTimer::timeout, this, &MainWindow::onUpdateSystemTime);
+  connect(sys_clock, &SystemClock::update, this,
+          &MainWindow::onUpdateSystemTime);
+  connect(sys_clock_thread, &QThread::started, sys_clock, &SystemClock::start);
+
   connect(ui->buttonAddProcess, &QPushButton::clicked, this,
-          &MainWindow::onButtonAddProcessClicked);
+          &MainWindow::onButtonAddProcess);
   connect(ui->buttonStart, &QPushButton::clicked, this,
           &MainWindow::onButtonStart);
   connect(ui->buttonStop, &QPushButton::clicked, this,
           &MainWindow::onButtonStop);
+  connect(ui->buttonTick, &QPushButton::clicked, this,
+          &MainWindow::onButtonTick);
+  connect(ui->buttonRandomProcess, &QPushButton::clicked, this,
+          &MainWindow::onButtonRandomProcess);
   connect(ui->cbChooseAlgo, &QComboBox::currentIndexChanged, this,
           &MainWindow::onChooseAlgo);
   connect(ui->buttonClear, &QPushButton::clicked, this,
           &MainWindow::onChooseAlgo);
+}
+
+void MainWindow::connectScheduler() {
+  connect(scheduler, &ProcessScheduler::updateProcess, this,
+          &MainWindow::onUpdateTable);
+  connect(scheduler_thread, &QThread::started, scheduler,
+          &ProcessScheduler::start);
+
+  connect(scheduler, &ProcessScheduler::addedProcess, this,
+          &MainWindow::onAddTable);
+  connect(scheduler, &ProcessScheduler::updateTicks, this,
+          &MainWindow::onUpdateTicks);
 }
 
 void MainWindow::initTable() {
@@ -69,37 +101,45 @@ void MainWindow::initTable() {
   ui->processTable->setModel(model);
 }
 
-void MainWindow::onUpdateTable(ProcessInfo& info) {
+void MainWindow::onAddTable(ProcessInfo& info) {
+  model->insertRow(info.pid);
+  onUpdateTable(info, true);
+}
+
+void MainWindow::onUpdateTable(ProcessInfo& info, bool isNewProcess) {
   int idx = info.pid;
-  if (!findProcess(idx)) {
-    model->insertRow(idx);
-  }
 
-  for (int i = 0; i < model->columnCount(); ++i) {
-    QColor color("white");
-    switch (info.current_state) {
-      case State::Executing:
-        color.setNamedColor("lightgreen");
-        break;
-      case State::Waiting:
-        color.setNamedColor("lightblue");
-        break;
-      case State::Ready:
-        color.setNamedColor("coral");
-        break;
-      case State::Over:
-        color.setNamedColor("lightgrey");
-        break;
+  if (QChar(static_cast<char>(info.current_state)) !=
+      model->data(model->index(idx, 3)).toChar()) {
+    for (int i = 0; i < model->columnCount(); ++i) {
+      QColor color("white");
+      switch (info.current_state) {
+        case State::Executing:
+          color.setNamedColor("lightgreen");
+          break;
+        case State::Waiting:
+          color.setNamedColor("lightblue");
+          break;
+        case State::Ready:
+          color.setNamedColor("coral");
+          break;
+        case State::Over:
+          color.setNamedColor("lightgrey");
+          break;
+      }
+      model->setData(model->index(idx, i), color, Qt::BackgroundRole);
     }
-    model->setData(model->index(idx, i), color, Qt::BackgroundRole);
   }
 
-  model->setData(model->index(idx, 0), QString::number(info.pid));
-  model->setData(
-      model->index(idx, 1),
-      QString("%1.%2").arg(
-          info.add_time.toString(),
-          QString::number(info.add_time.msec()).rightJustified(3, '0')));
+  if (isNewProcess) {
+    model->setData(model->index(idx, 0), QString::number(info.pid));
+    model->setData(
+        model->index(idx, 1),
+        QString("%1.%2").arg(
+            info.add_time.toString(),
+            QString::number(info.add_time.msec()).rightJustified(3, '0')));
+  }
+
   QString states = "";
   for (int i = 0; i < info.states.size(); ++i) {
     if (i == info.idx_state) {
@@ -109,8 +149,10 @@ void MainWindow::onUpdateTable(ProcessInfo& info) {
     }
   }
   model->setData(model->index(idx, 2), states);
+
   model->setData(model->index(idx, 3),
                  QChar(static_cast<char>(info.current_state)));
+
   if (info.current_state == State::Executing) {
     ui->labelViewPID->setText(QString::number(info.pid));
   } else if (info.current_state == State::Over) {
@@ -122,17 +164,16 @@ void MainWindow::onUpdateTicks(int ticks) {
   ui->labelViewCountTicks->setText(QString::number(ticks));
 }
 
-void MainWindow::onUpdateSystemTime() {
-  QTime time = QTime::currentTime();
-  ui->labelViewTime->setText(QString("%1.%2").arg(
-      time.toString(), QString::number(time.msec()).rightJustified(3, '0')));
+void MainWindow::onUpdateSystemTime(QString& time) {
+  ui->labelViewTime->setText(time);
 }
 
-void MainWindow::onButtonAddProcessClicked() {
+void MainWindow::onButtonAddProcess() {
   QString plan = ui->lineProcessPlan->text();
   if (plan.length() == 0) {
     return;
   }
+
   ProcessStates states;
   foreach (QChar state, plan) {
     switch (state.unicode()) {
@@ -150,11 +191,13 @@ void MainWindow::onButtonAddProcessClicked() {
         return;
     }
   }
+
   scheduler->addProcess(states);
 }
 
 void MainWindow::onButtonStart() {
-  tick_timer->start(ui->spinBoxMsQuant->text().toInt());
+  scheduler->setLatency(ui->spinBoxMsQuant->text().toInt());
+  scheduler->resume();
   ui->lineProcessPlan->setEnabled(false);
   ui->buttonAddProcess->setEnabled(false);
   ui->buttonRandomProcess->setEnabled(false);
@@ -168,7 +211,7 @@ void MainWindow::onButtonStart() {
 }
 
 void MainWindow::onButtonStop() {
-  tick_timer->stop();
+  scheduler->pause();
   ui->lineProcessPlan->setEnabled(true);
   ui->buttonAddProcess->setEnabled(true);
   ui->buttonRandomProcess->setEnabled(true);
@@ -181,28 +224,54 @@ void MainWindow::onButtonStop() {
   ui->buttonClear->setEnabled(true);
 }
 
+void MainWindow::onButtonTick() { scheduler->tick(); }
+
+void MainWindow::onButtonRandomProcess() {
+  QList<State> states;
+  int count = QRandomGenerator64::system()->bounded(4, 10);
+
+  states.append(State::Executing);
+  while (count--) {
+    switch (QRandomGenerator64::system()->generate() % 2) {
+      case 0:
+        states.append(State::Waiting);
+        break;
+      case 1:
+        states.append(State::Executing);
+        break;
+    }
+  }
+  states.append(State::Executing);
+
+  scheduler->addProcess(states);
+}
+
 void MainWindow::onChooseAlgo(int index) {
+  scheduler->stop();
+  scheduler_thread->quit();
+  scheduler_thread->wait();
+
   delete scheduler;
+  delete scheduler_thread;
   delete model;
+
   model = new QStandardItemModel(0, 4);
   initTable();
   ui->processTable->setModel(model);
+
   switch (index) {
     case 0:
+      scheduler = new FCFS();
+      break;
     case 1:
-      scheduler = new FCFS(this);
+      scheduler = new RR(ui->spinBoxTicks->text().toInt());
       break;
     default:
       return;
   }
-  connectScheduler();
-}
 
-bool MainWindow::findProcess(int pid) {
-  for (int i = 0; i < model->rowCount(); ++i) {
-    if (pid == model->data(model->index(i, 0)).toInt()) {
-      return true;
-    }
-  }
-  return false;
+  scheduler_thread = new QThread();
+  scheduler->moveToThread(scheduler_thread);
+  scheduler_thread->start();
+  connectScheduler();
 }

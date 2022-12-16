@@ -35,14 +35,29 @@ class ProcessScheduler : public QObject {
 
  public:
   explicit ProcessScheduler(QObject* parent = nullptr)
-      : QObject{parent}, next_pid(0), execute_pid(-1), count_ticks(0) {}
+      : QObject{parent},
+        next_pid(0),
+        execute_pid(-1),
+        count_ticks(0),
+        latency(1),
+        isFinished(false),
+        isPaused(true) {}
 
-  virtual void tick() = 0;
+  void setLatency(int _latency) { latency = _latency; }
+
   virtual void addProcess(ProcessStates& states) = 0;
   virtual int currentProcessExecute() = 0;
 
+ public slots:
+  virtual void tick() = 0;
+  virtual void start() = 0;
+  void stop() { isFinished = true; }
+  void resume() { isPaused = false; }
+  void pause() { isPaused = true; }
+
  signals:
-  void updateProcess(ProcessInfo& info);
+  void addedProcess(ProcessInfo& info);
+  void updateProcess(ProcessInfo& info, bool isNewProcess = false);
   void updateTicks(int ticks);
 
  protected:
@@ -50,6 +65,9 @@ class ProcessScheduler : public QObject {
   int next_pid;
   int execute_pid;
   int count_ticks;
+  int latency;
+  bool isFinished;
+  bool isPaused;
 };
 
 #endif  // PROCESSSCHEDULER_H

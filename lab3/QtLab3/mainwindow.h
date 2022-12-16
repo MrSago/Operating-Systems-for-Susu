@@ -4,12 +4,11 @@
 
 #include <QAbstractItemModel>
 #include <QMainWindow>
-#include <QTime>
-#include <QTimer>
+#include <QThread>
 #include <QVector>
 
-#include "fcfs.h"
 #include "processscheduler.h"
+#include "systemclock.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -25,26 +24,31 @@ class MainWindow : public QMainWindow {
   ~MainWindow();
 
  private:
-  void connectScheduler();
   void connectSlots();
+  void connectScheduler();
   void initTable();
 
  private slots:
-  void onUpdateTable(ProcessInfo& info);
+  void onAddTable(ProcessInfo& info);
+  void onUpdateTable(ProcessInfo& info, bool isNewProcess = false);
   void onUpdateTicks(int ticks);
-  void onUpdateSystemTime();
-  void onButtonAddProcessClicked();
+  void onUpdateSystemTime(QString& time);
+
+  void onButtonAddProcess();
   void onButtonStart();
   void onButtonStop();
+  void onButtonTick();
+  void onButtonRandomProcess();
   void onChooseAlgo(int index);
 
  private:
   Ui::MainWindow* ui;
-  QTimer* tick_timer;
-  QTimer* sys_timer;
   QAbstractItemModel* model;
-  ProcessScheduler* scheduler;
 
-  bool findProcess(int pid);
+  ProcessScheduler* scheduler;
+  QThread* scheduler_thread;
+
+  SystemClock* sys_clock;
+  QThread* sys_clock_thread;
 };
 #endif  // MAINWINDOW_H

@@ -1,6 +1,5 @@
-
-#ifndef FCFS_H
-#define FCFS_H
+#ifndef RR_H
+#define RR_H
 
 #include <QAbstractItemModel>
 #include <QObject>
@@ -8,11 +7,11 @@
 
 #include "processscheduler.h"
 
-class FCFS : public ProcessScheduler {
+class RR : public ProcessScheduler {
   Q_OBJECT
 
  public:
-  explicit FCFS(QObject* parent = nullptr);
+  explicit RR(int ticks_per_process, QObject* parent = nullptr);
 
   virtual void addProcess(ProcessStates& states);
   virtual int currentProcessExecute();
@@ -20,6 +19,10 @@ class FCFS : public ProcessScheduler {
  public slots:
   virtual void tick();
   virtual void start();
+
+ private:
+  int ticks_process;
+  int current_ticks = 0;
 };
 
-#endif  // FCFS_H
+#endif  // RR_H
