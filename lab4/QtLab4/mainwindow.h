@@ -22,12 +22,14 @@ class MainWindow : public QMainWindow {
  public:
   MainWindow(QWidget* parent = nullptr);
   ~MainWindow();
-  void startThreads();
 
  public slots:
   void onUpdateBufferTextEdit(const QString&);
-  void onUpdateGenerateTextEdit(const QString&);
-  void onUpdateReaderTextEdit(const QString&);
+
+ private slots:
+  void on_horizontalSlider_valueChanged(int value);
+
+  void on_horizontalSlider_2_valueChanged(int value);
 
  private:
   Ui::MainWindow* ui;

@@ -8,17 +8,14 @@ MainWindow::MainWindow(QWidget* parent)
   thread_generate = new ThreadGenerateString(shared_state, this);
   thread_reader = new ThreadReaderString(shared_state, this);
 
-  connect(thread_generate, SIGNAL(updateBufferTextEdit(const QString&)), this,
-          SLOT(onUpdateBufferTextEdit(const QString&)));
+  connect(thread_generate, SIGNAL(updateBufferTextEdit(QString)), this,
+          SLOT(onUpdateBufferTextEdit(QString)));
 
-  connect(thread_generate, SIGNAL(updateGenerateTextEdit(const QString&)), this,
-          SLOT(onUpdateGenerateTextEdit(const QString&)));
+  connect(thread_reader, SIGNAL(updateBufferTextEdit(QString)), this,
+          SLOT(onUpdateBufferTextEdit(QString)));
 
-  connect(thread_reader, SIGNAL(updateBufferTextEdit(const QString&)), this,
-          SLOT(onUpdateBufferTextEdit(const QString&)));
-
-  connect(thread_reader, SIGNAL(updateReaderTextEdit(const QString&)), this,
-          SLOT(onUpdateReaderTextEdit(const QString&)));
+  thread_generate->start();
+  thread_reader->start();
 
   ui->setupUi(this);
 }
@@ -36,17 +33,16 @@ MainWindow::~MainWindow() {
   delete ui;
 }
 
-void MainWindow::startThreads() {
-  thread_generate->start();
-  thread_reader->start();
-}
-
 void MainWindow::onUpdateBufferTextEdit(const QString& str) {
   ui->textEditStrBuffer->setText(str);
 }
-void MainWindow::onUpdateGenerateTextEdit(const QString& str) {
-  ui->textEditStrGenerator->setText(str);
+
+void MainWindow::on_horizontalSlider_valueChanged(int value) {
+  thread_generate->setLatency(value);
+  ui->label_3->setText(QString::number(value));
 }
-void MainWindow::onUpdateReaderTextEdit(const QString& str) {
-  ui->textEditStrReader->setText(str);
+
+void MainWindow::on_horizontalSlider_2_valueChanged(int value) {
+  thread_reader->setLatency(value);
+  ui->label_4->setText(QString::number(value));
 }

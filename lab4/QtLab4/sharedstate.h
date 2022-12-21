@@ -2,22 +2,23 @@
 #define SHAREDSTATE_H
 
 #include <QMutex>
+#include <QVector>
 #include <QWaitCondition>
 
-#define BUF_SIZE (11)
-#define DELAY (300)
+#define BUF_SIZE (10)
+#define GEN_DELAY (100)
+#define READ_DELAY (300)
 
 struct SharedState {
   QMutex* mtx;
   QWaitCondition* cv;
   bool done;
-  QChar buf[BUF_SIZE];
+  QVector<QChar> buf;
 
   SharedState() {
     mtx = new QMutex;
     cv = new QWaitCondition;
     done = false;
-    std::fill(buf, buf + BUF_SIZE, '\0');
   }
 
   ~SharedState() {

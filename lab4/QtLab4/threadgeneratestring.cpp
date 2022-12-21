@@ -4,27 +4,27 @@
 
 ThreadGenerateString::ThreadGenerateString(SharedState* shared_state,
                                            QObject* parent)
-    : ss(shared_state), QThread{parent} {}
+    : ss(shared_state), delay(GEN_DELAY), QThread{parent} {}
 
 void ThreadGenerateString::run() {
   forever {
-    ss->mtx->lock();
-    while (ss->done) {
-      ss->cv->wait(ss->mtx);
+    if (ss->buf.size() > BUF_SIZE) {
+      QThread::msleep(delay);
+      continue;
     }
 
-    QChar gen[BUF_SIZE] = {QChar('\0')};
-    for (int i = 0; i < BUF_SIZE; ++i) {
-      emit updateGenerateTextEdit(QString(gen));
-      gen[i] =
-          QChar('A' + QRandomGenerator::global()->generate() % ('Z' - 'A'));
-      QThread::msleep(DELAY);
-    }
-    std::copy(gen, gen + BUF_SIZE, ss->buf);
-    emit updateBufferTextEdit(QString(ss->buf));
+    QChar newChar =
+        QChar('A' + QRandomGenerator::global()->generate() % ('Z' - 'A'));
+    ss->buf.push_back(newChar);
 
-    ss->done = true;
-    ss->cv->wakeAll();
-    ss->mtx->unlock();
+    QString str = "";
+    for (auto& it : ss->buf) {
+      str += it;
+    }
+
+    emit updateBufferTextEdit(str);
+    QThread::msleep(delay);
   }
 }
+
+void ThreadGenerateString::setLatency(int del) { delay = del; }

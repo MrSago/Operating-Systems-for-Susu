@@ -2,27 +2,25 @@
 
 ThreadReaderString::ThreadReaderString(SharedState* shared_state,
                                        QObject* parent)
-    : ss(shared_state), QThread{parent} {}
+    : ss(shared_state), delay(READ_DELAY), QThread{parent} {}
 
 void ThreadReaderString::run() {
   forever {
-    ss->mtx->lock();
-    while (!ss->done) {
-      ss->cv->wait(ss->mtx);
+    if (ss->buf.size() <= 0) {
+      QThread::msleep(delay);
+      continue;
     }
 
-    QChar reader[BUF_SIZE] = {QChar('\0')};
-    for (int i = 1; i < BUF_SIZE; ++i) {
-      QChar sym = ss->buf[BUF_SIZE - 1 - i];
-      ss->buf[BUF_SIZE - 1 - i] = QChar('\0');
-      reader[BUF_SIZE - 1 - i] = sym;
-      emit updateBufferTextEdit(QString(ss->buf));
-      emit updateReaderTextEdit(QString(reader + BUF_SIZE - 1 - i));
-      QThread::msleep(DELAY);
+    ss->buf.pop_front();
+
+    QString str = "";
+    for (auto& it : ss->buf) {
+      str += it;
     }
 
-    ss->done = false;
-    ss->cv->wakeAll();
-    ss->mtx->unlock();
+    emit updateBufferTextEdit(str);
+    QThread::msleep(delay);
   }
 }
+
+void ThreadReaderString::setLatency(int del) { delay = del; }

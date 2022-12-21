@@ -29,14 +29,9 @@ MainWindow::MainWindow(QWidget* parent)
   sys_clock_thread->start();
 
   // TEST
-  ui->cbChooseAlgo->setCurrentIndex(1);
-  for (int i = 0; i < 50; ++i) {
-    ui->lineProcessPlan->setText("EEEWWWEEEEE");
-    onButtonAddProcess();
-    ui->lineProcessPlan->setText("EEEEEWWEE");
-    onButtonAddProcess();
-    ui->lineProcessPlan->setText("EEWWWEE");
-    onButtonAddProcess();
+  ui->cbChooseAlgo->setCurrentIndex(0);
+  for (int i = 0; i < 10; ++i) {
+    onButtonRandomProcess();
   }
 }
 
