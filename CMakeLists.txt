@@ -1,6 +1,6 @@
 
 cmake_minimum_required(VERSION 3.10)
-project(Data-Structures-and-Algorithms)
+project(Operating-Systems)
 
 set(CMAKE_CXX_STANDARD 11)
 
