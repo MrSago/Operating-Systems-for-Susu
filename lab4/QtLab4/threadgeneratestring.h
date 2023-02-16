@@ -12,11 +12,10 @@ class ThreadGenerateString : public QThread {
   explicit ThreadGenerateString(SharedState* shared_state,
                                 QObject* parent = nullptr);
   void run();
-  void setLatency(int del);
+  void setDelay(int del);
 
  signals:
-  void updateBufferTextEdit(const QString&);
-  void updateGenerateTextEdit(const QString&);
+  void updateGui(const int);
 
  private:
   SharedState* ss;

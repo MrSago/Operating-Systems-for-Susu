@@ -6,21 +6,22 @@ ThreadReaderString::ThreadReaderString(SharedState* shared_state,
 
 void ThreadReaderString::run() {
   forever {
-    if (ss->buf.size() <= 0) {
+    if (ss->buf.size() == 0) {
       QThread::msleep(delay);
       continue;
     }
 
+    int inputValue;
+
+    ss->mtx->lock();
+    inputValue = ss->buf.front();
     ss->buf.pop_front();
+    ss->mtx->unlock();
 
-    QString str = "";
-    for (auto& it : ss->buf) {
-      str += it;
-    }
+    emit updateGui(inputValue);
 
-    emit updateBufferTextEdit(str);
     QThread::msleep(delay);
   }
 }
 
-void ThreadReaderString::setLatency(int del) { delay = del; }
+void ThreadReaderString::setDelay(int del) { delay = del; }

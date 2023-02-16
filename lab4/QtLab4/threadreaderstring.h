@@ -12,11 +12,10 @@ class ThreadReaderString : public QThread {
   explicit ThreadReaderString(SharedState* shared_state,
                               QObject* parent = nullptr);
   void run();
-  void setLatency(int del);
+  void setDelay(int del);
 
  signals:
-  void updateBufferTextEdit(const QString&);
-  void updateReaderTextEdit(const QString&);
+  void updateGui(const int);
 
  private:
   SharedState* ss;

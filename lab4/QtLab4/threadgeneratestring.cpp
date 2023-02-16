@@ -13,18 +13,16 @@ void ThreadGenerateString::run() {
       continue;
     }
 
-    QChar newChar =
-        QChar('A' + QRandomGenerator::global()->generate() % ('Z' - 'A'));
-    ss->buf.push_back(newChar);
+    int newVal = QRandomGenerator::global()->generate() % 100;
 
-    QString str = "";
-    for (auto& it : ss->buf) {
-      str += it;
-    }
+    ss->mtx->lock();
+    ss->buf.push_back(newVal);
+    ss->mtx->unlock();
 
-    emit updateBufferTextEdit(str);
+    // emit updateGui(newVal);
+
     QThread::msleep(delay);
   }
 }
 
-void ThreadGenerateString::setLatency(int del) { delay = del; }
+void ThreadGenerateString::setDelay(int del) { delay = del; }

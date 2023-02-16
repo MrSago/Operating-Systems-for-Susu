@@ -24,17 +24,20 @@ class MainWindow : public QMainWindow {
   ~MainWindow();
 
  public slots:
-  void onUpdateBufferTextEdit(const QString&);
+  void onAddItemToList(const int);
 
  private slots:
   void on_horizontalSlider_valueChanged(int value);
 
   void on_horizontalSlider_2_valueChanged(int value);
 
+  void on_horizontalSlider_3_valueChanged(int value);
+
  private:
   Ui::MainWindow* ui;
   SharedState* shared_state;
   ThreadGenerateString* thread_generate;
+  ThreadGenerateString* thread_generate2;
   ThreadReaderString* thread_reader;
 };
 #endif  // MAINWINDOW_H
