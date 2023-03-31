@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>489</width>
-    <height>482</height>
+    <width>368</width>
+    <height>406</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -29,9 +29,9 @@
    <widget class="QFrame" name="frame">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>20</y>
-      <width>161</width>
+      <x>170</x>
+      <y>50</y>
+      <width>171</width>
       <height>141</height>
      </rect>
     </property>
@@ -46,31 +46,31 @@
       <rect>
        <x>120</x>
        <y>100</y>
-       <width>41</width>
+       <width>31</width>
        <height>16</height>
       </rect>
      </property>
      <property name="text">
-      <string>500</string>
+      <string>1000</string>
      </property>
     </widget>
     <widget class="QSlider" name="horizontalSlider">
      <property name="geometry">
       <rect>
-       <x>0</x>
+       <x>9</x>
        <y>20</y>
-       <width>160</width>
-       <height>16</height>
+       <width>151</width>
+       <height>20</height>
       </rect>
      </property>
      <property name="minimum">
       <number>50</number>
      </property>
      <property name="maximum">
-      <number>500</number>
+      <number>1000</number>
      </property>
      <property name="value">
-      <number>500</number>
+      <number>1000</number>
      </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -89,26 +89,26 @@
       </rect>
      </property>
      <property name="text">
-      <string>Reader latency</string>
+      <string>Reader interval</string>
      </property>
     </widget>
     <widget class="QSlider" name="horizontalSlider_3">
      <property name="geometry">
       <rect>
-       <x>0</x>
+       <x>9</x>
        <y>70</y>
-       <width>160</width>
-       <height>16</height>
+       <width>151</width>
+       <height>20</height>
       </rect>
      </property>
      <property name="minimum">
       <number>50</number>
      </property>
      <property name="maximum">
-      <number>500</number>
+      <number>1000</number>
      </property>
      <property name="value">
-      <number>500</number>
+      <number>1000</number>
      </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -122,31 +122,31 @@
       <rect>
        <x>120</x>
        <y>0</y>
-       <width>41</width>
+       <width>31</width>
        <height>16</height>
       </rect>
      </property>
      <property name="text">
-      <string>500</string>
+      <string>1000</string>
      </property>
     </widget>
     <widget class="QSlider" name="horizontalSlider_2">
      <property name="geometry">
       <rect>
-       <x>0</x>
+       <x>9</x>
        <y>120</y>
-       <width>160</width>
-       <height>16</height>
+       <width>151</width>
+       <height>20</height>
       </rect>
      </property>
      <property name="minimum">
       <number>50</number>
      </property>
      <property name="maximum">
-      <number>500</number>
+      <number>1000</number>
      </property>
      <property name="value">
-      <number>500</number>
+      <number>1000</number>
      </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -160,12 +160,12 @@
       <rect>
        <x>120</x>
        <y>50</y>
-       <width>41</width>
+       <width>31</width>
        <height>16</height>
       </rect>
      </property>
      <property name="text">
-      <string>500</string>
+      <string>1000</string>
      </property>
     </widget>
     <widget class="QLabel" name="label">
@@ -178,7 +178,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>Writer latency</string>
+      <string>Writer interval</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_5">
@@ -186,22 +186,22 @@
       <rect>
        <x>10</x>
        <y>50</y>
-       <width>91</width>
+       <width>101</width>
        <height>16</height>
       </rect>
      </property>
      <property name="text">
-      <string>Writer latency 2</string>
+      <string>Writer2 interval</string>
      </property>
     </widget>
    </widget>
    <widget class="QListWidget" name="listWidget">
     <property name="geometry">
      <rect>
-      <x>200</x>
-      <y>20</y>
-      <width>256</width>
-      <height>431</height>
+      <x>10</x>
+      <y>50</y>
+      <width>151</width>
+      <height>321</height>
      </rect>
     </property>
     <property name="movement">
@@ -215,6 +215,19 @@
     </property>
     <property name="viewMode">
      <enum>QListView::ListMode</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_7">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>10</y>
+      <width>91</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:20pt;&quot;&gt;Reader&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
   </widget>

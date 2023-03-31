@@ -9,7 +9,7 @@ class ThreadReaderString : public QThread {
   Q_OBJECT
 
  public:
-  explicit ThreadReaderString(SharedState* shared_state,
+  explicit ThreadReaderString(SharedState* shared_state, int delay,
                               QObject* parent = nullptr);
   void run();
   void setDelay(int del);

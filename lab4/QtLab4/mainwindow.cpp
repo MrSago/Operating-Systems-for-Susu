@@ -5,13 +5,9 @@
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
   shared_state = new SharedState;
-  thread_generate = new ThreadGenerateString(shared_state, this);
-  thread_generate2 = new ThreadGenerateString(shared_state, this);
-  thread_reader = new ThreadReaderString(shared_state, this);
-
-  //  connect(ui->listWidget->model(), SIGNAL(rowsInserted(QModelIndex, int,
-  //  int)),
-  //          ui->listWidget, SLOT(scrollToBottom()));
+  thread_generate = new ThreadGenerateString(shared_state, 1000, this);
+  thread_generate2 = new ThreadGenerateString(shared_state, 1000, this);
+  thread_reader = new ThreadReaderString(shared_state, 1000, this);
 
   connect(thread_generate, SIGNAL(updateGui(int)), this,
           SLOT(onAddItemToList(const int)));

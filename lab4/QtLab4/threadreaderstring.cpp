@@ -1,23 +1,18 @@
 #include "threadreaderstring.h"
 
-ThreadReaderString::ThreadReaderString(SharedState* shared_state,
+ThreadReaderString::ThreadReaderString(SharedState* shared_state, int interval,
                                        QObject* parent)
-    : ss(shared_state), delay(READ_DELAY), QThread{parent} {}
+    : ss(shared_state), delay(interval), QThread{parent} {}
 
 void ThreadReaderString::run() {
   forever {
-    if (ss->buf.size() == 0) {
+    if (ss->buf.empty()) {
       QThread::msleep(delay);
       continue;
     }
 
-    int inputValue;
-
-    ss->mtx->lock();
-    inputValue = ss->buf.front();
+    int inputValue = ss->buf.front();
     ss->buf.pop_front();
-    ss->mtx->unlock();
-
     emit updateGui(inputValue);
 
     QThread::msleep(delay);

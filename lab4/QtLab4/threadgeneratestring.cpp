@@ -1,25 +1,25 @@
 #include "threadgeneratestring.h"
 
+#include <Windows.h>
+
 #include <QRandomGenerator>
 
 ThreadGenerateString::ThreadGenerateString(SharedState* shared_state,
-                                           QObject* parent)
-    : ss(shared_state), delay(GEN_DELAY), QThread{parent} {}
+                                           int interval, QObject* parent)
+    : ss(shared_state), delay(interval), QThread{parent} {}
 
 void ThreadGenerateString::run() {
   forever {
-    if (ss->buf.size() > BUF_SIZE) {
+    if (ss->buf.size() >= BUF_SIZE) {
       QThread::msleep(delay);
       continue;
     }
 
     int newVal = QRandomGenerator::global()->generate() % 100;
 
-    ss->mtx->lock();
+    EnterCriticalSection(&ss->criticalSection);
     ss->buf.push_back(newVal);
-    ss->mtx->unlock();
-
-    // emit updateGui(newVal);
+    LeaveCriticalSection(&ss->criticalSection);
 
     QThread::msleep(delay);
   }

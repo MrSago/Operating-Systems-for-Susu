@@ -1,6 +1,8 @@
 #ifndef SHAREDSTATE_H
 #define SHAREDSTATE_H
 
+#include <Windows.h>
+
 #include <QMutex>
 #include <QQueue>
 #include <QWaitCondition>
@@ -10,21 +12,12 @@
 #define READ_DELAY (500)
 
 struct SharedState {
-  QMutex* mtx;
-  QWaitCondition* cv;
-  bool done;
+  CRITICAL_SECTION criticalSection;
   QQueue<int> buf;
 
-  SharedState() {
-    mtx = new QMutex;
-    cv = new QWaitCondition;
-    done = false;
-  }
+  SharedState() { InitializeCriticalSection(&criticalSection); }
 
-  ~SharedState() {
-    delete mtx;
-    delete cv;
-  }
+  ~SharedState() { DeleteCriticalSection(&criticalSection); }
 };
 
 #endif  // SHAREDSTATE_H

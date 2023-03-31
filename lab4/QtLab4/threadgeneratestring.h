@@ -9,7 +9,7 @@ class ThreadGenerateString : public QThread {
   Q_OBJECT
 
  public:
-  explicit ThreadGenerateString(SharedState* shared_state,
+  explicit ThreadGenerateString(SharedState* shared_state, int interval,
                                 QObject* parent = nullptr);
   void run();
   void setDelay(int del);
