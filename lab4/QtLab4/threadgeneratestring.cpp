@@ -5,20 +5,21 @@
 #include <QRandomGenerator>
 
 ThreadGenerateString::ThreadGenerateString(SharedState* shared_state,
-                                           int interval, QObject* parent)
-    : ss(shared_state), delay(interval), QThread{parent} {}
+                                           int interval, int number,
+                                           QObject* parent)
+    : ss(shared_state), delay(interval), nThread(number), QThread{parent} {}
 
 void ThreadGenerateString::run() {
   forever {
-    if (ss->buf.size() >= BUF_SIZE) {
-      QThread::msleep(delay);
-      continue;
-    }
-
     int newVal = QRandomGenerator::global()->generate() % 100;
 
     EnterCriticalSection(&ss->criticalSection);
-    ss->buf.push_back(newVal);
+    while (ss->buf.size() >= BUF_SIZE) {
+      LeaveCriticalSection(&ss->criticalSection);
+      QThread::msleep(delay);
+      EnterCriticalSection(&ss->criticalSection);
+    }
+    ss->buf.push_back({nThread, newVal});
     LeaveCriticalSection(&ss->criticalSection);
 
     QThread::msleep(delay);

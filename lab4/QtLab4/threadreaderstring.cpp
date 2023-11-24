@@ -11,9 +11,9 @@ void ThreadReaderString::run() {
       continue;
     }
 
-    int inputValue = ss->buf.front();
+    auto inputValue = ss->buf.front();
     ss->buf.pop_front();
-    emit updateGui(inputValue);
+    emit updateGui(inputValue.first, inputValue.second);
 
     QThread::msleep(delay);
   }

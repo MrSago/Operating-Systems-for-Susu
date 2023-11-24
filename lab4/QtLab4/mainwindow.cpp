@@ -5,18 +5,12 @@
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
   shared_state = new SharedState;
-  thread_generate = new ThreadGenerateString(shared_state, 1000, this);
-  thread_generate2 = new ThreadGenerateString(shared_state, 1000, this);
+  thread_generate = new ThreadGenerateString(shared_state, 1000, 1, this);
+  thread_generate2 = new ThreadGenerateString(shared_state, 1000, 2, this);
   thread_reader = new ThreadReaderString(shared_state, 1000, this);
 
-  connect(thread_generate, SIGNAL(updateGui(int)), this,
-          SLOT(onAddItemToList(const int)));
-
-  connect(thread_generate2, SIGNAL(updateGui(int)), this,
-          SLOT(onAddItemToList(const int)));
-
-  connect(thread_reader, SIGNAL(updateGui(int)), this,
-          SLOT(onAddItemToList(const int)));
+  connect(thread_reader, SIGNAL(updateGui(const int, const int)), this,
+          SLOT(onAddItemToList(const int, const int)));
 
   thread_generate->start();
   thread_generate2->start();
@@ -42,8 +36,10 @@ MainWindow::~MainWindow() {
   delete ui;
 }
 
-void MainWindow::onAddItemToList(const int val) {
-  ui->listWidget->addItem(QString::number(val));
+void MainWindow::onAddItemToList(const int nThread, const int val) {
+  ui->listWidget->addItem(
+      QString("Writer[%1]: %2")
+          .arg(QString::number(nThread), QString::number((val))));
   ui->listWidget->scrollToBottom();
 }
 

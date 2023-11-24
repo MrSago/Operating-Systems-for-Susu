@@ -24,7 +24,7 @@ class MainWindow : public QMainWindow {
   ~MainWindow();
 
  public slots:
-  void onAddItemToList(const int);
+  void onAddItemToList(const int nThread, const int val);
 
  private slots:
   void on_horizontalSlider_valueChanged(int value);

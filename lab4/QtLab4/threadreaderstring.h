@@ -15,7 +15,7 @@ class ThreadReaderString : public QThread {
   void setDelay(int del);
 
  signals:
-  void updateGui(const int);
+  void updateGui(const int thread, const int val);
 
  private:
   SharedState* ss;

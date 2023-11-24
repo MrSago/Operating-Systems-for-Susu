@@ -10,16 +10,14 @@ class ThreadGenerateString : public QThread {
 
  public:
   explicit ThreadGenerateString(SharedState* shared_state, int interval,
-                                QObject* parent = nullptr);
+                                int number, QObject* parent = nullptr);
   void run();
   void setDelay(int del);
-
- signals:
-  void updateGui(const int);
 
  private:
   SharedState* ss;
   int delay;
+  int nThread;
 };
 
 #endif  // THREADGENERATESTRING_H

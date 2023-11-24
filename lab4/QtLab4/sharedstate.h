@@ -3,9 +3,8 @@
 
 #include <Windows.h>
 
-#include <QMutex>
+#include <QPair>
 #include <QQueue>
-#include <QWaitCondition>
 
 #define BUF_SIZE (10)
 #define GEN_DELAY (500)
@@ -13,7 +12,7 @@
 
 struct SharedState {
   CRITICAL_SECTION criticalSection;
-  QQueue<int> buf;
+  QQueue<QPair<int, int>> buf;
 
   SharedState() { InitializeCriticalSection(&criticalSection); }
 
